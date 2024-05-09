@@ -48,15 +48,22 @@ def is_active_token(token):
         expiration_time = payload.get('exp')
         expiration_datetime = datetime.fromtimestamp(expiration_time)
         current_time = datetime.utcnow()
-
-        if current_time < expiration_datetime:
-            return True
+        access_key = payload.get('access_key')
+        admin = Admin.objects.filter(access_key=access_key)
+        if admin:
+            admin = admin.first()
+            if admin.email != payload.get('email'):
+                return False, "Not user"
         else:
-            return False
+            return False, "Not user"
+        if current_time < expiration_datetime:
+            return True, "OK"
+        else:
+            return False, "OK"
     except jwt.ExpiredSignatureError:
-        return False
+        return False, "OK"
     except jwt.DecodeError:
-        return False
+        return False, "OK"
 
 
 def get_access_token(refresh_token):
@@ -99,23 +106,37 @@ class CheckTokenMiddleware:
             reverse('register'),
         ]
         if request.path not in paths_that_dont_need_check:
-            if 'access_token' not in request.COOKIES and not is_active_token(request.COOKIES.get('access_token')):
-                try:
-                    new_tokens, new_refresh_token = get_access_token(request.COOKIES.get('refresh_token'))
-                except:
-                    new_tokens = None
-                    new_refresh_token = None
-                if new_tokens is not None:
-                    request.COOKIES['access_token'] = new_tokens
-                    request.COOKIES['refresh_token'] = new_refresh_token
-                    response = self.get_response(request)
-                    response.set_cookie('access_token', new_tokens, httponly=True)
-                    response.set_cookie('refresh_token', new_refresh_token, httponly=True)
-                    return response
+            try:
+                if 'access_token' in request.COOKIES:
+                    b, text = is_active_token(request.COOKIES.get('access_token'))
+                    if text == "Not user":
+                        response = redirect('/login/')
+                        response.set_cookie('access_token', '', max_age=0)
+                        response.set_cookie('refresh_token', '', max_age=0)
+                        return response
+                    if not b:
+                        try:
+                            new_tokens, new_refresh_token = get_access_token(request.COOKIES.get('refresh_token'))
+                        except:
+                            new_tokens = None
+                            new_refresh_token = None
+                        if new_tokens is not None:
+                            request.COOKIES['access_token'] = new_tokens
+                            request.COOKIES['refresh_token'] = new_refresh_token
+                            response = self.get_response(request)
+                            response.set_cookie('access_token', new_tokens, httponly=True)
+                            response.set_cookie('refresh_token', new_refresh_token, httponly=True)
+                            return response
+                        else: return redirect('/login/')
                 else: return redirect('/login/')
-        response = self.get_response(request)
-        return response
-
+            except:
+                return redirect('/login/')
+            return self.get_response(request)
+        else:
+            response = self.get_response(request)
+            response.set_cookie('access_token', '', max_age=0)
+            response.set_cookie('refresh_token', '', max_age=0)
+            return response
 
 @universal_middleware
 def GetUserMiddleware(get_response):

@@ -4,7 +4,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Admin(User):
+    access_key = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    def __str__(self):
+        return f'{self.first_name} - {self.last_name}'
+
+
 class Product(models.Model):
+    user = models.ForeignKey(Admin, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True, null=False)
     description = models.TextField(null=False)
 
@@ -13,6 +21,7 @@ class Product(models.Model):
 
 
 class Place(models.Model):
+    user = models.ForeignKey(Admin, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True, null=False)
     description = models.TextField(null=False)
     location = models.CharField(max_length=255, null=False)
@@ -22,6 +31,7 @@ class Place(models.Model):
 
 
 class Market(models.Model):
+    user = models.ForeignKey(Admin, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.FloatField(null=False)
@@ -32,6 +42,7 @@ class Market(models.Model):
 
 
 class Storage(models.Model):
+    user = models.ForeignKey(Admin, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     amount = models.IntegerField(null=False)
@@ -41,6 +52,7 @@ class Storage(models.Model):
 
 
 class Selling(models.Model):
+    user = models.ForeignKey(Admin, on_delete=models.CASCADE)
     place = models.ForeignKey(Place, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.FloatField(null=False)
@@ -49,10 +61,3 @@ class Selling(models.Model):
 
     def __str__(self):
         return f'{self.place} - {self.product}'
-
-
-class Admin(User):
-    access_key = models.UUIDField(default=uuid.uuid4, editable=False)
-
-    def __str__(self):
-        return f'{self.first_name} - {self.last_name}'

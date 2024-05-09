@@ -29,7 +29,7 @@ def get_product(request, id):
 
 
 def delete_product(request, id):
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=id, user=request.user)
     product.delete()
     messages.success(request, f'Товар "{product.name}" был удален')
     return redirect('products')
@@ -41,7 +41,8 @@ def add_product(request):
         if form.is_valid():
             new_product = Product(
                 name=form.cleaned_data['name'],
-                description=form.cleaned_data['description']
+                description=form.cleaned_data['description'],
+                user=request.user
             )
             new_product.save()
             messages.success(request, f'Товар "{new_product.name}" добавлен')
@@ -52,17 +53,17 @@ def add_product(request):
 
 
 def places(request):
-    places = Place.objects.all()
+    places = Place.objects.filter(user=request.user)
     return render(request, 'places/index.html', {'places': places})
 
 
 def get_place(request, id):
-    place = Place.objects.get(id=id)
+    place = get_object_or_404(Place, id=id, user=request.user)
     return render(request, 'places/get.html', {'place': place})
 
 
 def delete_place(request, id):
-    place = Place.objects.get(id=id)
+    place = get_object_or_404(Place, id=id, user=request.user)
     place.delete()
     messages.success(request, f'Помещение "{place.name}" было удалено')
     return redirect('places')
@@ -75,7 +76,7 @@ def add_place(request):
             name = form.cleaned_data['name']
             description = form.cleaned_data['description']
             location = form.cleaned_data['location']
-            place = Place(name=name, description=description, location=location)
+            place = Place(name=name, description=description, location=location, user=request.user)
             place.save()
             messages.success(request, f'Помещение "{place.name}" было добавлено')
             return redirect('places')
@@ -85,7 +86,7 @@ def add_place(request):
 
 
 def market(request):
-    data = Market.objects.select_related('place', 'product').all()
+    data = Market.objects.select_related('place', 'product').filter(user=request.user)
     return render(request, 'market/index.html', {'data': data})
 
 
@@ -99,10 +100,10 @@ def add_to_market(request):
             amount = form.cleaned_data['amount']
             price = form.cleaned_data['price']
 
-            place = get_object_or_404(Place, name=place_name)
-            product = get_object_or_404(Product, name=product_name)
+            place = get_object_or_404(Place, name=place_name, user=request.user)
+            product = get_object_or_404(Product, name=product_name, user=request.user)
 
-            storage = Storage.objects.filter(place=place, amount__gte=amount)
+            storage = Storage.objects.filter(place=place, amount__gte=amount, user=request.user)
 
             if not storage:
                 messages.error(request, 'Недостаточно единиц товара в помещении')
@@ -112,7 +113,7 @@ def add_to_market(request):
             storage.amount -= amount
             storage.save()
 
-            market = Market(place=place, product=product, amount=amount, price=price)
+            market = Market(place=place, product=product, amount=amount, price=price, user=request.user)
             market.save()
 
             messages.success(request, 'Позиция успешно добавлена на рынок')
@@ -123,7 +124,7 @@ def add_to_market(request):
 
 
 def sell_from_market(request, id):
-    market = Market.objects.get(id=id)
+    market = get_object_or_404(Market, user=request.user, id=id)
     product = market.product
     place = market.place
     form = SellFromMarketForm()
@@ -143,7 +144,7 @@ def sell_from_market(request, id):
             else:
                 market.delete()
 
-            selling = Selling(place=market.place, product=market.product, amount=amount, price=market.price)
+            selling = Selling(place=market.place, product=market.product, amount=amount, price=market.price, user=request.user)
             selling.save()
 
             messages.success(request, 'Продажа успешно зафиксирована')
@@ -153,12 +154,12 @@ def sell_from_market(request, id):
 
 
 def market_history(request):
-    data = Selling.objects.select_related('place', 'product').all()
+    data = Selling.objects.select_related('place', 'product').filter(user=request.user)
     return render(request, 'market/history.html', {'data': data})
 
 
 def return_from_market(request, id):
-    market = Market.objects.get(id=id)
+    market = get_object_or_404(Market, user=request.user, id=id)
     product = market.product
     place = market.place
     form = ReturnFromMarketForm()
@@ -178,7 +179,7 @@ def return_from_market(request, id):
             else:
                 market.delete()
 
-            storage = Storage(place=market.place, product=market.product, amount=amount)
+            storage = Storage(place=market.place, product=market.product, amount=amount, user=request.user)
             storage.save()
 
             messages.success(request, 'Товар успешно возвращен на склад')
@@ -188,7 +189,7 @@ def return_from_market(request, id):
 
 
 def storage(request):
-    data = Storage.objects.select_related('place', 'product').all()
+    data = Storage.objects.select_related('place', 'product').filter(user=request.user)
     return render(request, 'storage/index.html', {'data': data})
 
 
@@ -200,10 +201,10 @@ def add_to_storage(request):
             product_name = form.cleaned_data['product']
             amount = form.cleaned_data['amount']
 
-            place = get_object_or_404(Place, name=place_name)
-            product = get_object_or_404(Product, name=product_name)
+            place = get_object_or_404(Place, name=place_name, user=request.user)
+            product = get_object_or_404(Product, name=product_name, user=request.user)
 
-            storage = Storage(place=place, product=product, amount=amount)
+            storage = Storage(place=place, product=product, amount=amount, user=request.user)
             storage.save()
 
             messages.success(request, 'Товар успешно добавлен на склад')
@@ -214,7 +215,7 @@ def add_to_storage(request):
 
 
 def write_off_from_storage(request, id):
-    storage = Storage.objects.get(id=id)
+    storage = get_object_or_404(Storage, user=request.user, id=id)
     product = storage.product
     place = storage.place
     form = WriteOffFromStorageForm()
