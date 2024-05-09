@@ -1,4 +1,7 @@
+import uuid
+
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Product(models.Model):
@@ -46,3 +49,10 @@ class Selling(models.Model):
 
     def __str__(self):
         return f'{self.place} - {self.product}'
+
+
+class Admin(User):
+    access_key = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    def __str__(self):
+        return f'{self.first_name} - {self.last_name}'

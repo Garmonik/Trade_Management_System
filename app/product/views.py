@@ -1,11 +1,13 @@
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from .models import Product, Market, Place, Storage, Selling
-from .forms import ProductForm, AddToMarketForm, PlaceForm, WriteOffFromStorageForm, AddToStorageForm, ReturnFromMarketForm, SellFromMarketForm
+from .models import Product, Market, Place, Storage, Selling, Admin
+from .forms import ProductForm, AddToMarketForm, PlaceForm, WriteOffFromStorageForm, AddToStorageForm, ReturnFromMarketForm, SellFromMarketForm, SignUpForm, LoginForm
+from .utils import get_token
 
 
 def home(request):
@@ -241,3 +243,89 @@ def write_off_from_storage(request, id):
 @require_http_methods(["GET", "POST"])
 def transfer_storage(request):
     return HttpResponse('Comming soon...')
+
+
+def register(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/login/')
+        else:
+            messages.error(request, form.errors)
+    else:
+        form = SignUpForm()
+    return render(request, 'facecontrol/register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = get_object_or_404(Admin, email=form.cleaned_data['email'])
+            if not user.check_password(form.cleaned_data['password']):
+                messages.error(request, f'Неверный пароль')
+                return redirect('/login/')
+            else:
+                response = redirect('/home/')
+                access_token, refresh_token = get_token(user)
+                response.set_cookie('access_token', access_token, max_age=3600)
+                response.set_cookie('refresh_token', refresh_token, max_age=3600*24*30)
+                return response
+    else:
+        form = LoginForm()
+    return render(request, 'facecontrol/login.html', {'form': form})
+
+
+# class LoginView(APIView):
+#     parser_classes = [JSONParser]
+#
+#     def post(self, request):
+#         if 'email' not in request.data:
+#             return Response({'message': 'Пользователь с таким e-mail не найден'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         email = request.data.get('email')
+#         if not validate_email(email):
+#             return Response({'message': 'Пользователь с таким e-mail не найден'}, status=status.HTTP_400_BAD_REQUEST)
+#         if 'password' not in request.data:
+#             return Response({'message': 'Неверный пароль'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         password = request.data.get('password')
+#
+#         try:
+#             user = User.objects.get(email=email)
+#             if not user:
+#                 return Response({'message': 'Пользователь с таким e-mail не найден'}, status=status.HTTP_401_UNAUTHORIZED)
+#             if not user.check_password(password):
+#                 return Response({'message': 'Неверный пароль'}, status=status.HTTP_401_UNAUTHORIZED)
+#         except Exception as e:
+#             sentry_sdk.capture_exception(e)
+#             error_log = ErrorLog.objects.create(
+#                 path=request.path,
+#                 error_message=str(e),
+#                 error_traceback=traceback.format_exc(),
+#                 status_code=getattr(e, 'status_code', 500)
+#             )
+#             return Response({'message': 'Пользователь с такими e-mail и паролем не найден'}, status=status.HTTP_401_UNAUTHORIZED)
+#         access_token_user, refresh_token_user = generate_tokens_user(email, user.password)
+#         response_data = {
+#             'message': 'Logged in successfully',
+#             'index_name': user.customer.namespace,
+#             'email': user.email,
+#             'is_admin': user.is_admin,
+#             'is_super_admin': user.is_super_admin,
+#             'use_sources': user.customer.use_sources,
+#             'bot_name': user.customer.bot_name,
+#             'hello_message': user.customer.hello_message
+#         }
+#         if user.is_admin:
+#             access_token, refresh_token = generate_tokens(user.customer.admin_key)
+#         else:
+#             access_token, refresh_token = generate_tokens(user.customer.auth_key)
+#         response = Response(response_data, status=status.HTTP_200_OK)
+#         response.set_cookie('is_admin', user.is_admin)
+#         response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='None')
+#         response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, samesite='None')
+#         response.set_cookie('access_token_user', access_token_user, httponly=True, secure=True, samesite='None')
+#         response.set_cookie('refresh_token_user', refresh_token_user, httponly=True, secure=True, samesite='None')
+#         return response
