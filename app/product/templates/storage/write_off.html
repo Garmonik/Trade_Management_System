@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Списать товар со склада</h1>
+  {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <p>Списание со склада помещения "{{ place.name }}" товара "{{ product.name }}". Количество товара {{ storage.amount }}</p>
+  <form method="POST" action="{% url 'write_off_from_storage' id=storage.id %}">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.amount.label_tag }}
+      {{ form.amount }}
+    </div>
+    <button type="submit" class="btn btn-primary">Списать</button>
+  </form>
+</div>
+{% endblock %}

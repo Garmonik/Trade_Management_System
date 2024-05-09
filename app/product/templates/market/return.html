@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Фиксация продажи</h1>
+  {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <p>Возврат товара "{{ product.name }}" на склад в помещении "{{ place.name }}" по цене {{ market.price }} за штуку. Товаров в позиции {{ market.amount }} штук</p>
+  <form method="POST" action="{% url 'return_from_market' id=market.id %}">
+    {% csrf_token %}
+    <div class="form-group">{{ form.amount.label_tag }} {{ form.amount }}</div>
+    <button type="submit" class="btn btn-primary">Вернуть</button>
+  </form>
+</div>
+{% endblock %}

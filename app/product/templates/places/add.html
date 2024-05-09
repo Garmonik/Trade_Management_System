@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Добавление нового помещения</h1>
+  {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <form method="POST" action="{% url 'add_place' %}">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.name.label_tag }}
+      {{ form.name }}
+    </div>
+    <div class="form-group">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+    <div class="form-group">
+      {{ form.location.label_tag }}
+      {{ form.location }}
+    </div>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+  </form>
+</div>
+{% endblock %}

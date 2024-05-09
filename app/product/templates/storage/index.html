@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Склад</h1>
+  {% if messages %}
+    <div class="alert alert-success">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <a href="{% url 'add_to_storage' %}">Добавить товары на склад</a>
+  <a href="{% url 'transfer_storage' %}">Переместить товары между складами</a>
+  <table class="table">
+    <tr>
+        <th>Помещение</th>
+        <th>Товар</th>
+        <th>Количество</th>
+    </tr>
+    {% for storage, product, place in data %}
+    <tr>
+        <td><a href="{% url 'get_place' id=place.id %}">{{ place.name }}</a></td>
+        <td><a href="{% url 'get_product' id=product.id %}">{{ product.name }}</a></td>
+        <td>{{ storage.amount }}</td>
+        <td><a href="{% url 'write_off_from_storage' id=storage.id %}">Списать</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

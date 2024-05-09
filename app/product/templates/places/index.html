@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Перечень помещений</h1>
+  {% if messages %}
+    <div class="alert alert-success">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <h4><a href="{% url 'add_place' %}">Добавить новое помещение</a></h4>
+  <h3>
+    <ul>
+      {% for p in places %}
+      <li><a href="{% url 'get_place' id=p.id %}">{{ p.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </h3>
+</div>
+{% endblock %}

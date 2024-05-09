@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Перечень продаваемых товаров</h1>
+  {% if messages %}
+    <div class="alert alert-success">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <h4><a href="{% url 'add_product' %}">Добавить новый товар</a></h4>
+  <h3>
+    <ul>
+      {% for p in products %}
+      <li><a href="{% url 'get_product' id=p.id %}">{{ p.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </h3>
+</div>
+{% endblock %}

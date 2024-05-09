@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Рынок</h1>
+  {% if messages %}
+    <div class="alert alert-success">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  <a href="{% url 'add_to_market' %}">Добавить позицию на рынок</a>
+  <a href="{% url 'market_history' %}">История</a>
+  <table class="table">
+    <tr>
+        <th>Помещение</th>
+        <th>Товар</th>
+        <th>Цена</th>
+        <th>Количество</th>
+    </tr>
+    {% for market, product, place in data %}
+    <tr>
+        <td><a href="{% url 'get_place' id=place.id %}">{{ place.name }}</a></td>
+        <td><a href="{% url 'get_product' id=product.id %}">{{ product.name }}</a></td>
+        <td>{{ market.price }}</td>
+        <td>{{ market.amount }}</td>
+        <td><a href="{% url 'sell_from_market' id=market.id %}">Продажа</a></td>
+        <td><a href="{% url 'return_from_market' id=market.id %}">Возврат на склад</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

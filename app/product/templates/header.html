@@ -1,0 +1,22 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'home' %}">Система Управления Торговлей</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><a href="{% url 'products' %}">Товары</a></li>
+            <li class="{% if request.resolver_match.url_name == 'places' %}active{% endif %}"><a href="{% url 'places' %}">Помещения</a></li>
+            <li class="{% if request.resolver_match.url_name == 'market' %}active{% endif %}"><a href="{% url 'market' %}">Рынок</a></li>
+            <li class="{% if request.resolver_match.url_name == 'storage' %}active{% endif %}"><a href="{% url 'storage' %}">Склад</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+</nav>

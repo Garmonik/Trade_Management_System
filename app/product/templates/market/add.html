@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Добавление позиции на рынок</h1>
+  {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+    <form method="POST" action="{% url 'add_to_market' %}">
+    {{ form.csrf_token }}
+      <div class="form-group">{{ form.place.label }} {{ form.place }}</div>
+      <div class="form-group">{{ form.product.label }} {{ form.product }}</div>
+      <div class="form-group">{{ form.price.label }} {{ form.price }}</div>
+      <div class="form-group">{{ form.amount.label }} {{ form.amount }}</div>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+  </form>
+</div>
+{% endblock %}
