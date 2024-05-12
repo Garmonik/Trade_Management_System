@@ -1,0 +1,72 @@
+{% extends "recommendations/recommendations.html" %}
+
+{% block css %}
+<style>
+    /* Добавьте здесь необходимые стили */
+</style>
+{% endblock css %}
+
+{% block main %}
+<div class="container">
+    <h2>Рекомендации по повышению цен</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Продукт</th>
+                <th scope="col">Торговая точка</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in results %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.place }}</td>
+                <td>{{ item.amount }}</td>
+                <td>
+                    <button class="btn btn-primary update-price"
+                            data-amount="{{ item.amount }}"
+                            data-market-id="{{ item.market }}">Пополнить товар
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Форма для отправки данных о пополнении товара -->
+    <form id="updateForm" method="GET" style="display:none;">
+      {% csrf_token %}
+      <input type="hidden" name="market" id="formMarketId">
+      <input type="hidden" name="amount" id="formAmount">
+    </form>
+
+</div>
+{% endblock main %}
+
+{% block js %}
+<script>
+   document.addEventListener("DOMContentLoaded", function() {
+       const updateButtons = document.querySelectorAll('.update-price');
+
+       updateButtons.forEach(button => {
+           button.addEventListener('click', function() {
+               const amount = this.getAttribute('data-amount');
+               const market_id = this.getAttribute('data-market-id');
+
+               // Заполните скрытые поля формы данными
+               document.getElementById('formMarketId').value = market_id;
+               document.getElementById('formAmount').value = amount;
+
+               // Динамически устанавливаете action для формы в зависимости от выбранного товара
+               var updateForm = document.getElementById('updateForm');
+               updateForm.action = `/market/update/amount/${market_id}/`; // Используйте ваш шаблон URL
+
+               // Отправьте форму
+               updateForm.submit();
+           });
+       });
+   });
+</script>
+{% endblock js %}

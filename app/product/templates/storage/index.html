@@ -12,22 +12,21 @@
       </ul>
     </div>
   {% endif %}
-  <a href="{% url 'add_to_storage' %}">Добавить товары на склад</a>
-  <a href="{% url 'transfer_storage' %}">Переместить товары между складами</a>
+  <a href="{% url 'add_to_storage' %}" class="btn">Добавить товары на склад</a>
   <table class="table">
     <tr>
         <th>Помещение</th>
         <th>Товар</th>
         <th>Количество</th>
     </tr>
-    {% for storage, product, place in data %}
-    <tr>
-        <td><a href="{% url 'get_place' id=place.id %}">{{ place.name }}</a></td>
-        <td><a href="{% url 'get_product' id=product.id %}">{{ product.name }}</a></td>
-        <td>{{ storage.amount }}</td>
-        <td><a href="{% url 'write_off_from_storage' id=storage.id %}">Списать</a></td>
-    </tr>
-    {% endfor %}
+{% for i in data %}
+<tr>
+    <td><a href="{% url 'get_place' id=i.place.id %}" class="btn">{{ i.place.name }}</a></td>
+    <td><a href="{% url 'get_product' id=i.product.id %}" class="btn">{{ i.product.name }}</a></td>
+    <td>{{ i.amount }}</td>
+    <td><a href="{% url 'write_off_from_storage' id=i.id %}" class="btn">Списать</a></td> <!-- Исправлено с storage.id на i.id -->
+</tr>
+{% endfor %}
   </table>
 </div>
 {% endblock %}

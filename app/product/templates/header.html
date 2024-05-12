@@ -1,3 +1,10 @@
+<style>
+  .user-name a {
+    background-color: black;
+    color: white;
+  }
+</style>
+
 <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -14,8 +21,14 @@
             <li class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><a href="{% url 'home' %}">Главная</a></li>
             <li class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><a href="{% url 'products' %}">Товары</a></li>
             <li class="{% if request.resolver_match.url_name == 'places' %}active{% endif %}"><a href="{% url 'places' %}">Помещения</a></li>
-            <li class="{% if request.resolver_match.url_name == 'market' %}active{% endif %}"><a href="{% url 'market' %}">Рынок</a></li>
+            <li class="{% if request.resolver_match.url_name == 'market' %}active{% endif %}"><a href="{% url 'market' %}">Торговые точки</a></li>
             <li class="{% if request.resolver_match.url_name == 'storage' %}active{% endif %}"><a href="{% url 'storage' %}">Склад</a></li>
+            <li class="{% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}"><a href="{% url 'recommendations' %}">Рекоммендации</a></li>
+
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="user-name"><a href="home">{{ request.user.first_name }} {{ request.user.last_name }}</a></li>
+            <li><a href="{% url 'logout' %}">Выйти</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

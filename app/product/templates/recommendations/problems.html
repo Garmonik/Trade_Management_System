@@ -1,0 +1,90 @@
+{% extends "recommendations/recommendations.html" %}
+
+{% block css %}
+<style>
+    /* Добавьте здесь необходимые стили */
+</style>
+{% endblock css %}
+
+{% block main %}
+<div class="container">
+    <h2>Рекомендации по снижению цен</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Продукт</th>
+                <th scope="col">Торговая точка</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Рекомендуемая цена</th>
+                <th scope="col">Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in results %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.place }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.new_price }}</td>
+                <td>
+                    <button class="btn btn-primary update-price"
+                            data-product-id="{{ item.product_id }}"
+                            data-place-id="{{ item.place_id }}"
+                            data-new-price="{{ item.new_price }}"
+                            data-market-id="{{ item.market }}">Произвести изменение
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock main %}
+
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const updateButtons = document.querySelectorAll('.update-price');
+
+    updateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const product_id = this.getAttribute('data-product-id');
+            const place_id = this.getAttribute('data-place-id');
+            const new_price = this.getAttribute('data-new-price');
+            const market_id = this.getAttribute('data-market-id');
+
+            const requestData = {
+                place_id: place_id,
+                product_id: product_id,
+                new_price: new_price
+            };
+
+            fetch(`/market/${market_id}/`, { // Убедитесь, что этот URL правильный и ведет на ваше API
+                method: 'POST',
+                body: JSON.stringify(requestData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевой ответ был не ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Успех:', data);
+                alert('Цена обновлена успешно.');
+                window.location.reload();
+
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                alert('Ошибка обновления цены. Убедитесь, что сервер возвращает корректный JSON.');
+            });
+        });
+    });
+});
+</script>
+{% endblock js %}

@@ -1,0 +1,105 @@
+{% extends "recommendations/recommendations.html" %}
+
+{% block css %}
+<style>
+    /* Добавьте здесь необходимые стили */
+</style>
+{% endblock css %}
+
+{% block main %}
+<div class="container">
+    <h2>Рекомендации по списанию и возврату товаров</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Продукт</th>
+                <th scope="col">Торговая точка</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in results %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.place }}</td>
+                <td>{{ item.price }}</td>
+                <td>
+                    <button class="btn btn-danger write_off"
+                            data-market-id="{{ item.market }}">Списать
+                    </button>
+                    <button class="btn btn-secondary return_prod"
+                            data-market-id="{{ item.market }}">Перенести на склад
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock main %}
+
+{% block js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const writeOffButtons = document.querySelectorAll('.write_off');
+    const returnButtons = document.querySelectorAll('.return_prod');
+
+    writeOffButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const market_id = this.getAttribute('data-market-id');
+
+            fetch(`/market/${market_id}/write_off_all/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевой ответ был не ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Товар успешно списан.');
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при списании товара.');
+            });
+        });
+    });
+
+    returnButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const market_id = this.getAttribute('data-market-id');
+
+            fetch(`/market/${market_id}/return_all/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевой ответ был не ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Товар успешно перенесен на склад.');
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                alert('Ошибка при возврате товара на склад.');
+            });
+        });
+    });
+});
+</script>
+{% endblock js %}

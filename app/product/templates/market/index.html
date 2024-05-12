@@ -1,8 +1,27 @@
 {% extends 'base.html' %}
 
+<style>
+.btn {
+  background-color: #4CAF50; /* Зеленый */
+  color: white;
+  padding: 14px 20px;
+  margin: 8px
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+  background-color: #45a049; /* Чуть темнее оттенок зеленого */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); /* Добавляем тень */
+}
+</style>
+
+
 {% block main %}
 <div class="container">
-  <h1 class="page-header">Рынок</h1>
+  <h1 class="page-header">Торговые точки</h1>
   {% if messages %}
     <div class="alert alert-success">
       <ul>
@@ -12,8 +31,8 @@
       </ul>
     </div>
   {% endif %}
-  <a href="{% url 'add_to_market' %}">Добавить позицию на рынок</a>
-  <a href="{% url 'market_history' %}">История</a>
+<a href="{% url 'add_to_market' %}" class="btn">Добавить позицию на рынок</a>
+<a href="{% url 'market_history' %}" class="btn">История</a>
   <table class="table">
     <tr>
         <th>Помещение</th>
@@ -21,16 +40,18 @@
         <th>Цена</th>
         <th>Количество</th>
     </tr>
-    {% for market, product, place in data %}
-    <tr>
-        <td><a href="{% url 'get_place' id=place.id %}">{{ place.name }}</a></td>
-        <td><a href="{% url 'get_product' id=product.id %}">{{ product.name }}</a></td>
-        <td>{{ market.price }}</td>
-        <td>{{ market.amount }}</td>
-        <td><a href="{% url 'sell_from_market' id=market.id %}">Продажа</a></td>
-        <td><a href="{% url 'return_from_market' id=market.id %}">Возврат на склад</a></td>
-    </tr>
-    {% endfor %}
+{% for i in data %}
+<tr>
+    <td><a href="{% url 'get_place' id=i.place.id %}" class="btn">{{ i.place.name }}</a></td>
+    <td><a href="{% url 'get_product' id=i.product.id %}" class="btn">{{ i.product.name }}</a></td>
+    <td>{{ i.price }}</td>
+    <td>{{ i.amount }}</td>
+    <td><a href="{% url 'sell_from_market' id=i.id %}" class="btn">Продажа</a></td>
+    <td><a href="{% url 'return_from_market' id=i.id %}" class="btn">Возврат на склад</a></td>
+    <td><a href="{% url 'update_to_market_new' pk=i.id %}" class="btn">Изменение позиции</a></td>
+
+</tr>
+{% endfor %}
   </table>
 </div>
 {% endblock %}

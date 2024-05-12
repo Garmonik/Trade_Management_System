@@ -3,7 +3,10 @@
 {% block main %}
 <div class="container">
   <h1 class="page-header">Информация о товаре "{{ product.name }}"</h1>
-  <p>{{ product.description }}</p>
+  <p><strong>Описание:</strong> {{ product.description }}</p>
+  <!-- Отображение типа товара -->
+  <p><strong>Тип товара:</strong> {{ product.type_product }}</p>
+
   <form method="POST" action="{% url 'delete_product' product.id %}">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">Удалить</button>

@@ -52,7 +52,7 @@ MIDDLEWARE = [
 
     'shop_statistic.middleware.GetUserMiddleware',
     'shop_statistic.middleware.CheckTokenMiddleware',
-
+    'shop_statistic.middleware.CheckValidPathMiddleware',
 ]
 
 SESSION_COOKIE_HTTPONLY = True

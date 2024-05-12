@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <h1 class="page-header">Изменить позиции на рынок</h1>
+
+  <!-- Вставляем информацию о рынке -->
+  <div class="market-info">
+    <p>Помещение: {{ market.place }}</p>
+    <p>Товар: {{ market.product }}</p>
+    <p>Цена: {{ market.price }}</p>
+    <p>Количество: {{ market.amount }}</p>
+  </div>
+
+  {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+    <form method="POST" action="{% url 'update_to_market_new' pk=market.id %}">
+    {% csrf_token %}
+      <div class="form-group">{{ form.price.label }} {{ form.price }}</div>
+      <div class="form-group">{{ form.amount.label }} {{ form.amount }}</div>
+    <button type="submit" class="btn btn-primary">Изменить</button>
+  </form>
+</div>
+{% endblock %}

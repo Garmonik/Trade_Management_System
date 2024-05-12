@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
-from product.models import Admin
+from product.models import Admin, ProductType, Product, Place, AdminSettings, Market
 from django.utils.translation import gettext_lazy as _
 
 
@@ -14,6 +14,12 @@ class ProductForm(forms.Form):
         label='Описание',
         required=True,
         widget=forms.Textarea(attrs={'class': 'form-control'}))
+    type_product = forms.ModelChoiceField(
+        queryset=ProductType.objects.all(),
+        label='Тип товара',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        empty_label=None)
 
 
 class PlaceForm(forms.Form):
@@ -34,17 +40,7 @@ class PlaceForm(forms.Form):
     )
 
 
-class AddToMarketForm(forms.Form):
-    product = forms.CharField(
-        label='Товар',
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'size': '20'})
-    )
-    place = forms.CharField(
-        label='Помещение',
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'size': '20'})
-    )
+class UpdateToMarketForm(forms.Form):
     amount = forms.IntegerField(
         label='Количество',
         required=True,
@@ -59,6 +55,64 @@ class AddToMarketForm(forms.Form):
     )
 
 
+class AddToMarketForm(forms.Form):
+    product = forms.ModelChoiceField(
+            label='Товар',
+            queryset=Product.objects.none(),
+            required=True,
+            widget=forms.Select(attrs={'class': 'form-control'}),
+            empty_label=None)
+    place = forms.ModelChoiceField(
+            label='Помещение',
+            queryset=Place.objects.none(),
+            required=True,
+            widget=forms.Select(attrs={'class': 'form-control'}),
+            empty_label=None)
+    amount = forms.IntegerField(
+        label='Количество',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    price = forms.FloatField(
+        label='Цена',
+        required=True,
+        min_value=0.01,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(AddToMarketForm, self).__init__(*args, **kwargs)
+
+        if user is not None:
+            self.fields['product'].queryset = Product.objects.filter(user=user)
+            self.fields['place'].queryset = Place.objects.filter(user=user)
+
+
+class UpdateAmountToMarketForm(forms.Form):
+    market = forms.ModelChoiceField(
+        label='Товар',
+        queryset=Market.objects.none(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),  # Используем readonly здесь
+        empty_label=None
+    )
+    amount = forms.IntegerField(
+        label='Количество',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(UpdateAmountToMarketForm, self).__init__(*args, **kwargs)
+
+        if user is not None:
+            self.fields['market'].queryset = Market.objects.filter(user=user)
+
+
 class SellFromMarketForm(forms.Form):
     amount = forms.IntegerField(label='Количество', required=True, min_value=1)
 
@@ -68,22 +122,32 @@ class ReturnFromMarketForm(forms.Form):
 
 
 class AddToStorageForm(forms.Form):
-    product = forms.CharField(
-        label='Товар',
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'size': '20'})
-    )
-    place = forms.CharField(
-        label='Помещение',
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'size': '20'})
-    )
+    product = forms.ModelChoiceField(
+            label='Товар',
+            queryset=Product.objects.none(),
+            required=True,
+            widget=forms.Select(attrs={'class': 'form-control'}),
+            empty_label=None)
+    place = forms.ModelChoiceField(
+            label='Помещение',
+            queryset=Place.objects.none(),
+            required=True,
+            widget=forms.Select(attrs={'class': 'form-control'}),
+            empty_label=None)
     amount = forms.IntegerField(
         label='Количество',
         required=True,
         min_value=1,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
     )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(AddToStorageForm, self).__init__(*args, **kwargs)
+
+        if user is not None:
+            self.fields['product'].queryset = Product.objects.filter(user=user)
+            self.fields['place'].queryset = Place.objects.filter(user=user)
 
 
 class TransferStorageForm(forms.Form):
@@ -142,3 +206,58 @@ class LoginForm(forms.Form):
         label=_("Пароль"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}))
+
+
+class AdminSettingsForm(forms.ModelForm):
+    date_min = forms.IntegerField(
+        label='Количество дней для снижения цен',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    percent_min = forms.IntegerField(
+        label='Процент снижения',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    data_max = forms.IntegerField(
+        label='Количество дней для повышении цен',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    percent_max = forms.IntegerField(
+        label='Процент повышения',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    count_min = forms.IntegerField(
+        label='Количество товаров для снижения цен',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    count_max = forms.IntegerField(
+        label='Количество товаров для повышения цен',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    write_off_date = forms.IntegerField(
+        label='Количество дней для списания или переноса на склад',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+    minimum_quantity_of_goods = forms.IntegerField(
+        label='Минимальное количество товаров в магазине',
+        required=True,
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'size': '20'})
+    )
+
+    class Meta:
+        model = AdminSettings
+        fields = ['date_min', 'percent_min', 'count_min', 'data_max', 'percent_max', 'count_max', 'write_off_date', 'minimum_quantity_of_goods']

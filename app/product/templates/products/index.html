@@ -12,11 +12,11 @@
       </ul>
     </div>
   {% endif %}
-  <h4><a href="{% url 'add_product' %}">Добавить новый товар</a></h4>
+  <h4><a href="{% url 'add_product' %}" class="btn">Добавить новый товар</a></h4>
   <h3>
     <ul>
       {% for p in products %}
-      <li><a href="{% url 'get_product' id=p.id %}">{{ p.name }}</a></li>
+      <li><a href="{% url 'get_product' id=p.id %}" class="btn">{{ p.name }}</a></li>
       {% endfor %}
     </ul>
   </h3>

@@ -11,13 +11,13 @@
         <th>Количество</th>
         <th>Время</th>
     </tr>
-    {% for selling, product, place in data %}
+    {% for i in data %}
     <tr>
-        <td><a href="{% url 'get_place' id=place.id %}">{{ place.name }}</a></td>
-        <td><a href="{% url 'get_product' id=product.id %}">{{ product.name }}</a></td>
-        <td>{{ selling.price }}</td>
-        <td>{{ selling.amount }}</td>
-        <td>{{ selling.time }}</td>
+        <td><a href="{% url 'get_place' id=i.place.id %}">{{ i.place.name }}</a></td>
+        <td><a href="{% url 'get_product' id=i.product.id %}">{{ i.product.name }}</a></td>
+        <td>{{ i.price }}</td>
+        <td>{{ i.amount }}</td>
+        <td>{{ i.time }}</td>
     </tr>
     {% endfor %}
   </table>

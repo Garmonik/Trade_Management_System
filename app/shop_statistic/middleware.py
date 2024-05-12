@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime, timedelta
 
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse, resolve, Resolver404
 from django.utils.decorators import sync_and_async_middleware
 
 from product.models import Admin
@@ -96,11 +96,8 @@ def get_access_token(refresh_token):
 
 
 @universal_middleware
-class CheckTokenMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
+def CheckTokenMiddleware(get_response):
+    def middleware(request):
         paths_that_dont_need_check = [
             reverse('login'),
             reverse('register'),
@@ -123,7 +120,7 @@ class CheckTokenMiddleware:
                         if new_tokens is not None:
                             request.COOKIES['access_token'] = new_tokens
                             request.COOKIES['refresh_token'] = new_refresh_token
-                            response = self.get_response(request)
+                            response = get_response(request)
                             response.set_cookie('access_token', new_tokens, httponly=True)
                             response.set_cookie('refresh_token', new_refresh_token, httponly=True)
                             return response
@@ -131,12 +128,24 @@ class CheckTokenMiddleware:
                 else: return redirect('/login/')
             except:
                 return redirect('/login/')
-            return self.get_response(request)
+            return get_response(request)
         else:
-            response = self.get_response(request)
-            response.set_cookie('access_token', '', max_age=0)
-            response.set_cookie('refresh_token', '', max_age=0)
+            response = get_response(request)
             return response
+    return middleware
+
+
+@universal_middleware
+def CheckValidPathMiddleware(get_response):
+    def middleware(request):
+        try:
+            resolve(request.path_info)
+        except Resolver404:
+            return redirect('/home/')
+        return get_response(request)
+
+    return middleware
+
 
 @universal_middleware
 def GetUserMiddleware(get_response):
