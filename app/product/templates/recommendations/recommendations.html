@@ -58,7 +58,7 @@
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav center-block">
                 <li class="{% if request.resolver_match.url_name == 'successes' %}active{% endif %}">
-                    <a href="{% url 'rec_successes' %}">Рекомендации по поднятию цен</a>
+                    <a href="{% url 'rec_successes' %}">Рекомендации по повышению цен</a>
                 </li>
                 <li class="{% if request.resolver_match.url_name == 'problems' %}active{% endif %}">
                     <a href="{% url 'rec_ploblems' %}">Рекомендации по снижению цен</a>
