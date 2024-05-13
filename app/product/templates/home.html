@@ -10,20 +10,24 @@
 
 <h2 class="page-header">Статистика торговых точек</h2>
 <form id="statisticsForm">
-    <select id="marketSelect">
-    </select>
-    <select id="periodSelect">
-        <option value="last_week">Последняя неделя</option>
-        <option value="last_month">Последний месяц</option>
-        <option value="last_year">Последний год</option>
-        <option value="all_time">Все время</option>
-    </select>
-    <button type="submit">Показать</button>
+    <div class="form-group">
+        <label for="marketSelect">Выберите торговую точку:</label>
+        <select id="marketSelect" class="form-control">
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="periodSelect">Выберите период:</label>
+        <select id="periodSelect" class="form-control">
+            <option value="last_week">Последняя неделя</option>
+            <option value="last_month">Последний месяц</option>
+            <option value="last_year">Последний год</option>
+            <option value="all_time">Все время</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Показать</button>
 </form>
 
 <canvas id="salesChart" width="400" height="200"></canvas>
-
-
 
 <h2 class="page-header">Настройки Администратора</h2>
 
@@ -35,80 +39,10 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Сохранить</button>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Загрузка списка торговых точек
-    fetch('/market/list/', {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        const marketSelect = document.getElementById('marketSelect');
-        data.forEach(market => {
-            let option = new Option(market.place_name, market.id);
-            marketSelect.add(option);
-        });
-    })
-    .catch(error => console.error('Ошибка:', error));
-
-    // Обновление текста на странице при изменении значений формы
-    function updateText(inputId, displayId) {
-        document.getElementById(inputId).addEventListener('input', function() {
-            document.getElementById(displayId).textContent = this.value;
-        });
-    }
-
-    // Добавьте здесь вызовы функции updateText для ваших элементов формы
-
-    const form = document.getElementById('statisticsForm');
-    const chartCanvas = document.getElementById('salesChart');
-    let salesChart; // Чтобы можно было обновлять график
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault(); // Предотвращаем отправку формы
-        const marketId = document.getElementById('marketSelect').value;
-        const period = document.getElementById('periodSelect').value;
-
-        fetch(`/graf/selling/?date=${period}&market=${marketId}`, {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            const labels = Object.keys(data);
-            const values = Object.values(data);
-
-            // Если график уже существует, уничтожаем его перед созданием нового
-            if (salesChart) {
-                salesChart.destroy();
-            }
-
-            salesChart = new Chart(chartCanvas, {
-                type: 'line', // Тип графика
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Продажи',
-                        data: values,
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        })
-        .catch(error => console.error('Ошибка:', error));
-    });
-});
-
 document.addEventListener('DOMContentLoaded', function() {
     fetch('/market/list/', {
         method: 'GET',
@@ -136,51 +70,51 @@ document.addEventListener('DOMContentLoaded', function() {
     updateText('id_count_max', 'count_max_display');
     updateText('id_percent_max', 'percent_max_display');
     updateText('id_write_off_date', 'write_off_date_display');
-    updateText('id_minimum_quantity_of_goods', 'minimum_quantity_of_goods_display'); // Исправлено
-});
+    updateText('id_minimum_quantity_of_goods', 'minimum_quantity_of_goods_display');
 
+    const form = document.getElementById('statisticsForm');
+    const chartCanvas = document.getElementById('salesChart');
+    let salesChart;
 
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const marketId = document.getElementById('marketSelect').value;
+        const period = document.getElementById('periodSelect').value;
 
+        fetch(`/graf/selling/?date=${period}&market=${marketId}`, {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            const labels = Object.keys(data);
+            const values = Object.values(data);
 
-form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const marketId = document.getElementById('marketSelect').value;
-    const period = document.getElementById('periodSelect').value;
+            if (salesChart) {
+                salesChart.destroy();
+            }
 
-    fetch(`/graf/selling/?date=${period}&market=${marketId}`, {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        const labels = Object.keys(data);
-        const values = Object.values(data);
-
-        // Если график уже существует, уничтожаем его перед созданием нового
-        if (salesChart) {
-            salesChart.destroy();
-        }
-
-        salesChart = new Chart(chartCanvas, {
-            type: 'line', // Тип графика
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Продажи',
-                    data: values,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+            salesChart = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Продажи',
+                        data: values,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
-    })
-    .catch(error => console.error('Ошибка:', error));
+            });
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
 });
 </script>
 
