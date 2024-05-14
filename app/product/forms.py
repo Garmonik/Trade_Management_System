@@ -179,6 +179,7 @@ class WriteOffFromStorageForm(forms.Form):
 
 
 class SignUpForm(UserCreationForm):
+    username = forms.CharField(label='Телефон', max_length=30, required=True)
     first_name = forms.CharField(label='Имя', max_length=30, required=True)
     last_name = forms.CharField(label='Фамилия', max_length=30, required=True)
     email = forms.EmailField(label='Почта', max_length=254, help_text='Required. Inform a valid email address.')
@@ -197,7 +198,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = Admin
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', )
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', "username")
 
 
 class LoginForm(forms.Form):
