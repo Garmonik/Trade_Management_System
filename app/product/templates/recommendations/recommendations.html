@@ -64,7 +64,7 @@
                     <a href="{% url 'rec_ploblems' %}">Рекомендации по снижению цен</a>
                 </li>
                 <li class="{% if request.resolver_match.url_name == 'write_off' %}active{% endif %}">
-                    <a href="{% url 'rec_write-off' %}">Рекомендации по переносу тавара на склад или списанию</a>
+                    <a href="{% url 'rec_write-off' %}">Рекомендации по переносу товара на склад или списанию</a>
                 </li>
                 <li class="{% if request.resolver_match.url_name == 'write_off' %}active{% endif %}">
                     <a href="{% url 'rec_replenishment' %}">Рекомендации по пополнению товаров</a>
