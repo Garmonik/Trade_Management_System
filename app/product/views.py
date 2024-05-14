@@ -46,21 +46,24 @@ def delete_product(request, id):
 
 
 def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            new_product = Product(
-                name=form.cleaned_data['name'],
-                description=form.cleaned_data['description'],
-                user=request.user,
-                type_product=form.cleaned_data['type_product'].name
-            )
-            new_product.save()
-            messages.success(request, f'Товар "{new_product.name}" добавлен')
-            return redirect('products')
-    else:
-        form = ProductForm()
-    return render(request, 'products/add.html', {'form': form})
+    try:
+        if request.method == 'POST':
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                new_product = Product(
+                    name=form.cleaned_data['name'],
+                    description=form.cleaned_data['description'],
+                    user=request.user,
+                    type_product=form.cleaned_data['type_product'].name
+                )
+                new_product.save()
+                messages.success(request, f'Товар "{new_product.name}" добавлен')
+                return redirect('products')
+        else:
+            form = ProductForm()
+        return render(request, 'products/add.html', {'form': form})
+    except:
+        return render(request, '404.html')
 
 
 def places(request):
