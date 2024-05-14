@@ -36,7 +36,7 @@ def create_profile_settings(sender, instance, created, **kwargs):
 
 class Product(models.Model):
     user = models.ForeignKey(Admin, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, unique=True, null=False)
+    name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False)
     type_product = models.CharField(max_length=255, null=True)
 

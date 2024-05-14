@@ -29,7 +29,7 @@ def about(request):
 
 
 def products(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(user=request.user)
     return render(request, 'products/index.html', {'products': products})
 
 
