@@ -257,27 +257,33 @@ def return_from_market(request, id):
 
 
 def return_from_market_all(request, id):
-    market = get_object_or_404(Market, user=request.user, id=id)
-    product = market.product
-    place = market.place
-    if request.method == 'POST':
-        amount = market.amount
-        market.delete()
+    try:
+        market = get_object_or_404(Market, user=request.user, id=id)
+        product = market.product
+        place = market.place
+        if request.method == 'POST':
+            amount = market.amount
+            market.delete()
 
-        storage = Storage(place=market.place, product=market.product, amount=amount, user=request.user)
-        storage.save()
+            storage = Storage(place=market.place, product=market.product, amount=amount, user=request.user)
+            storage.save()
 
-        return Response(status=status.HTTP_200_OK)
+            return JsonResponse({"success": True, "message": "Товар успешно перенесен на склад."})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)})
 
 
 def write_off_from_market_all(request, id):
-    market = get_object_or_404(Market, user=request.user, id=id)
-    product = market.product
-    place = market.place
-    if request.method == 'POST':
-        market.delete()
+    try:
+        market = get_object_or_404(Market, user=request.user, id=id)
+        product = market.product
+        place = market.place
+        if request.method == 'POST':
+            market.delete()
 
-        return Response(status=status.HTTP_200_OK)
+            return JsonResponse({"success": True, "message": "Товар успешно списан."})
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)})
 
 
 def storage(request):
