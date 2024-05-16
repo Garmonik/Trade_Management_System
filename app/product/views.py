@@ -100,7 +100,7 @@ def add_place(request):
 
 
 def market(request):
-    data = Market.objects.select_related('place', 'product').filter(user=request.user)
+    data = Market.objects.select_related('place', 'product').filter(user=request.user).order_by("place__name")
     return render(request, 'market/index.html', {'data': data})
 
 
