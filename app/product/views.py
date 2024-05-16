@@ -525,6 +525,7 @@ def recommendations_successes_view(request):
         product = market.product
 
         total_sold = Selling.objects.filter(
+            place=market.place,
             product=product,
             time__gte=compare_date
         ).aggregate(total=Sum('amount'))['total'] or 0
