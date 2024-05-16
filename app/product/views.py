@@ -658,8 +658,8 @@ class SalesGraphAPIView(APIView):
     def get(self, request):
         market_id = request.query_params.get('market', None)
         period = request.query_params.get('period', 'all_time')
-        market = get_object_or_404(Market, id=market_id, user=request.user)
-        queryset = Selling.objects.filter(user=request.user, place=market.place)
+        market = get_object_or_404(Place, name=market_id, user=request.user)
+        queryset = Selling.objects.filter(user=request.user, place=market)
         now = timezone.now()
 
         if request.query_params.get('date') == 'last_week':
