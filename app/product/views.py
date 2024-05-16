@@ -725,12 +725,11 @@ class SalesGraphAPIView(APIView):
 
 
 class MarketListView(ListAPIView):
-    serializer_class = MarketSerializer
 
     def get_queryset(self):
         qs = []
         queryset = Market.objects.filter(user=self.request.user)
         for i in queryset:
             if not i.place.name in qs:
-                qs.append(i)
-        return qs
+                qs.append(i.place.name)
+        return JsonResponse(qs)
