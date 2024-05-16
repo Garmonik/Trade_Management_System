@@ -583,15 +583,16 @@ def recommendations_write_off_view(request):
         if recent_update_exists:
             continue
 
-        result = {
-            'product': product.name,
-            'place': market.place.name,
-            'price': market.price,
-            'product_id': product.id,
-            'place_id': market.place.id,
-            'market': market.id
-        }
-        results.append(result)
+        if not total_sold:
+            result = {
+                'product': product.name,
+                'place': market.place.name,
+                'price': market.price,
+                'product_id': product.id,
+                'place_id': market.place.id,
+                'market': market.id
+            }
+            results.append(result)
     return render(request, 'recommendations/write_off.html', {"results": results})
 
 
