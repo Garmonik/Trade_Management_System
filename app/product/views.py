@@ -226,7 +226,7 @@ def sell_from_market(request, id):
 
 
 def market_history(request):
-    data = Selling.objects.select_related('place', 'product').filter(user=request.user)
+    data = Selling.objects.select_related('place', 'product').filter(user=request.user).order_by('-time')
     return render(request, 'market/history.html', {'data': data})
 
 
