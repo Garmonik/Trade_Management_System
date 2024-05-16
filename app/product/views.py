@@ -16,7 +16,6 @@ from rest_framework.views import APIView
 
 from .models import Product, Market, Place, Storage, Selling, Admin, AdminSettings, MarketUpdate
 from .forms import ProductForm, AddToMarketForm, PlaceForm, WriteOffFromStorageForm, AddToStorageForm, ReturnFromMarketForm, SellFromMarketForm, SignUpForm, LoginForm, AdminSettingsForm, UpdateToMarketForm, UpdateAmountToMarketForm
-from .serializers import MarketSerializer
 from .utils import get_token
 
 
