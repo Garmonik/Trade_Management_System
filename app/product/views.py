@@ -731,4 +731,4 @@ class MarketListView(ListAPIView):
         for i in queryset:
             if not i.place.name in qs:
                 qs.append(i.place.name)
-        return JsonResponse(qs)
+        return Response(qs)
