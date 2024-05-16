@@ -32,8 +32,8 @@
 
 <h2 class="page-header">Настройки Администратора</h2>
 
-<p>Если за промежуток <span id="date_min_display">{{ form.date_min.value }}</span> дней товар купят <span id="count_min_display">{{ form.count_min.value }}</span> штук, то товар необходимо понизить цену на <span id="percent_min_display">{{ form.percent_min.value }}</span> %.</p>
-<p>Если за промежуток <span id="data_max_display">{{ form.data_max.value }}</span> дней товар купят <span id="count_max_display">{{ form.count_max.value }}</span> штук, то товар необходимо повысить цену на <span id="percent_max_display">{{ form.percent_max.value }}</span> %.</p>
+<p>Если за промежуток <span id="date_min_display">{{ form.date_min.value }}</span> дней товар купят меньше, чем <span id="count_min_display">{{ form.count_min.value }}</span> штук, то товар необходимо понизить цену на <span id="percent_min_display">{{ form.percent_min.value }}</span> %.</p>
+<p>Если за промежуток <span id="data_max_display">{{ form.data_max.value }}</span> дней товар купят больше, чем <span id="count_max_display">{{ form.count_max.value }}</span> штук, то товар необходимо повысить цену на <span id="percent_max_display">{{ form.percent_max.value }}</span> %.</p>
 <p>Если за промежуток <span id="write_off_date_display">{{ form.write_off_date.value }}</span> дней товар не покупали, то необходимо списать или вернуть товар на склад</p>
 <p>Если товаров меньше чем <span id="_display">{{ form.minimum_quantity_of_goods.value }}</span>, то необходимо дозаказать со склада товар</p>
 
