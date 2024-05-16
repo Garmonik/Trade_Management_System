@@ -184,7 +184,7 @@ def update_to_market(request, pk):
             json_str = request.body.decode('utf-8')
             data_dict = json.loads(json_str)
             price = data_dict.get('new_price')
-            market = get_object_or_404(Market, user=request.user, id=id)
+            market = get_object_or_404(Market, user=request.user, id=pk)
             recent_update_exists = MarketUpdate.objects.create(
                 market=market,
                 product=market.product)
