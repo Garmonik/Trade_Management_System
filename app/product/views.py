@@ -178,7 +178,7 @@ def update_to_market_new(request, pk):
     return render(request, 'market/update.html', {'form': form, "market": market})
 
 
-def update_to_market(request, id):
+def update_to_market(request, pk):
     if request.method == 'POST':
         try:
             json_str = request.body.decode('utf-8')
