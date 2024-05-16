@@ -7,4 +7,4 @@ class MarketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Market
-        fields = ('place_name')
+        fields = ('id', 'place_name')
