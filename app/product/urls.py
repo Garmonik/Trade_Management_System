@@ -13,14 +13,13 @@ urlpatterns = [
     path('market/<int:id>/sell/', views.sell_from_market, name='sell_from_market'),
     path('market/history/', views.market_history, name='market_history'),
     path('market/<int:id>/return/', views.return_from_market, name='return_from_market'),
-    path('market/<int:id>/return_all/', views.return_from_market_all, name='return_from_market'),
-    path('market/<int:id>/write_off_all/', views.write_off_from_market_all, name='return_from_market'),
+    path('market/<int:id>/return_all/', views.return_from_market_all, name='return_from_market_all'),
+    path('market/<int:id>/write_off_all/', views.write_off_from_market_all, name='write_off_all'),
     path('market/', views.market, name='market'),
     path('market/add/', views.add_to_market, name='add_to_market'),
     path('market/<int:pk>/', views.update_to_market, name='update_to_market'),
     path('market/update/<int:pk>/', views.update_to_market_new, name='update_to_market_new'),
     path('market/update/amount/<int:pk>/', views.update_amount_to_market, name='update_to_market_amount'),
-
 
     path('storage/', views.storage, name='storage'),
     path('storage/add/', views.add_to_storage, name='add_to_storage'),

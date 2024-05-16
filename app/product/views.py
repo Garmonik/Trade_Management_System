@@ -127,8 +127,13 @@ def add_to_market(request):
             storage.amount -= amount
             storage.save()
 
-            market = Market(place=place, product=product, amount=amount, price=price, user=request.user)
-            market.save()
+            if market := Market.objects.filter(place=place, product=product, price=price, user=request.user):
+                market = market.first()
+                market.amount += amount
+                market.save()
+            else:
+                market = Market(place=place, product=product, amount=amount, price=price, user=request.user)
+                market.save()
 
             recent_update_exists = MarketUpdate.objects.create(
                 market=market,
@@ -284,6 +289,21 @@ def write_off_from_market_all(request, id):
             return JsonResponse({"success": True, "message": "Товар успешно списан."})
     except Exception as e:
         return JsonResponse({"success": False, "message": str(e)})
+
+
+def write_off_from_market_all_new(request, id):
+    market = get_object_or_404(Market, user=request.user, id=id)
+    product = market.product
+    place = market.place
+    if request.method == 'POST':
+        amount = market.amount
+        market.delete()
+
+        storage = Storage(place=market.place, product=market.product, amount=amount, user=request.user)
+        storage.save()
+
+        messages.success(request, 'Товар успешно возвращен на склад')
+        return redirect('rec_write-off')
 
 
 def storage(request):
