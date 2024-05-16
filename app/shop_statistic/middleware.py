@@ -78,7 +78,7 @@ def get_access_token(refresh_token):
         access_payload = {
             'access_key': access_key,
             'email': email,
-            'exp': datetime.utcnow() + timedelta(seconds=3600)
+            'exp': datetime.utcnow() + timedelta(seconds=3600*24*30)
         }
         refresh_payload = {
             'access_key': access_key,
