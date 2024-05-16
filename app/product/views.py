@@ -467,7 +467,7 @@ def recommendations_ploblems_view(request):
         if recent_update_exists:
             continue
 
-        if total_sold > count_min:
+        if total_sold < count_min:
             new_price = market.price - (market.price * percent_min / 100)
             result = {
                 'product': product.name,
@@ -514,7 +514,7 @@ def recommendations_successes_view(request):
         if recent_update_exists:
             continue
 
-        if total_sold < count_max:
+        if total_sold > count_max:
             new_price = market.price + (market.price * percent_max / 100)
             result = {
                 'product': product.name,
