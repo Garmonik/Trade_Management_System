@@ -8,3 +8,7 @@ class MarketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Market
         fields = ('id', 'place_name')
+
+    def validate_place_name(self, value):
+        if not Market.objects.filter(place__name=value).exists():
+            return value
