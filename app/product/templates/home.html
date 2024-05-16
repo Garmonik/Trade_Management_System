@@ -1,101 +1,125 @@
 {% extends "base.html" %}
 
 {% block main %}
-  <h1 class="page-header">Система Управления Торговлей</h1>
+<h1 class="page-header">Система Управления Торговлей</h1>
 
-  <h2>Личная информация</h2>
-  <p>Почта: {{ request.user.email }}</p>
-  <p>Имя: {{ request.user.first_name }}</p>
-  <p>Фамилия: {{ request.user.last_name }}</p>
-  <p>Телефон: {{ request.user.username }}</p>
+<h2>Личная информация</h2>
+<p>Почта: {{ request.user.email }}</p>
+<p>Имя: {{ request.user.first_name }}</p>
+<p>Фамилия: {{ request.user.last_name }}</p>
+<p>Телефон: {{ request.user.username }}</p>
 
-  <h2 class="page-header">Статистика торговых точек</h2>
-  <form id="statisticsForm">
-      <div class="form-group">
-          <label for="marketSelect">Выберите торговую точку:</label>
-          <select id="marketSelect" class="form-control">
-          </select>
-      </div>
-      <div class="form-group">
-          <label for="periodSelect">Выберите период:</label>
-          <select id="periodSelect" class="form-control">
-              <option value="last_week">Последняя неделя</option>
-              <option value="last_month">Последний месяц</option>
-              <option value="last_year">Последний год</option>
-              <option value="all_time">Все время</option>
-          </select>
-      </div>
-      <button type="submit" class="btn btn-primary">Показать</button>
-  </form>
+<h2 class="page-header">Статистика торговых точек</h2>
+<form id="statisticsForm">
+    <div class="form-group">
+        <label for="marketSelect">Выберите торговую точку:</label>
+        <select id="marketSelect" class="form-control">
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="periodSelect">Выберите период:</label>
+        <select id="periodSelect" class="form-control">
+            <option value="last_week">Последняя неделя</option>
+            <option value="last_month">Последний месяц</option>
+            <option value="last_year">Последний год</option>
+            <option value="all_time">Все время</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Показать</button>
+</form>
 
-  <canvas id="salesChart" width="400" height="200"></canvas>
+<canvas id="salesChart" width="400" height="200"></canvas>
 
-  <h2 class="page-header">Настройки Администратора</h2>
+<h2 class="page-header">Настройки Администратора</h2>
 
-  <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Сохранить</button>
-  </form>
+<p>Если за промежуток <span id="date_min_display">{{ form.date_min.value }}</span> дней товар купят меньше, чем <span id="count_min_display">{{ form.count_min.value }}</span> штук, то товар необходимо понизить цену на <span id="percent_min_display">{{ form.percent_min.value }}</span> %.</p>
+<p>Если за промежуток <span id="data_max_display">{{ form.data_max.value }}</span> дней товар купят больше, чем <span id="count_max_display">{{ form.count_max.value }}</span> штук, то товар необходимо повысить цену на <span id="percent_max_display">{{ form.percent_max.value }}</span> %.</p>
+<p>Если за промежуток <span id="write_off_date_display">{{ form.write_off_date.value }}</span> дней товар не покупали, то необходимо списать или вернуть товар на склад</p>
+<p>Если товаров меньше чем <span id="minimum_quantity_of_goods_display">{{ form.minimum_quantity_of_goods.value }}</span>, то необходимо дозаказать со склада товар</p>
 
-  <script>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('statisticsForm');
-      const marketSelect = document.getElementById('marketSelect');
-      const chartCanvas = document.getElementById('salesChart');
-      let salesChart;
+        const form = document.getElementById('statisticsForm');
+        const marketSelect = document.getElementById('marketSelect');
+        const chartCanvas = document.getElementById('salesChart');
+        let salesChart;
 
-      fetch('/market/list/', {
-          method: 'GET',
-      })
-      .then(response => response.json())
-      .then(data => {
-          data.forEach(place_name => {
-              const option = new Option(place_name);
-              marketSelect.add(option);
-          });
-      })
-      .catch(error => console.error('Ошибка:', error));
+        // Fetch data and populate marketSelect
+        fetch('/market/list/', {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(place_name => {
+                const option = new Option(place_name);
+                marketSelect.add(option);
+            });
+        })
+        .catch(error => console.error('Ошибка:', error));
 
-      form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          const marketId = marketSelect.value;
-          const period = document.getElementById('periodSelect').value;
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const marketId = marketSelect.value;
+            const period = document.getElementById('periodSelect').value;
 
-          fetch(`/graf/selling/?date=${period}&market=${marketId}`, {
-              method: 'GET',
-          })
-          .then(response => response.json())
-          .then(data => {
-              const labels = Object.keys(data);
-              const values = Object.values(data);
+            fetch(`/graf/selling/?date=${period}&market=${marketId}`, {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const labels = Object.keys(data);
+                const values = Object.values(data);
 
-              if (salesChart !== undefined) {
-                  salesChart.destroy();
-              }
+                if (salesChart !== undefined) {
+                    salesChart.destroy();
+                }
 
-              salesChart = new Chart(chartCanvas, {
-                  type: 'line',
-                  data: {
-                      labels: labels,
-                      datasets: [{
-                          label: 'Продажи',
-                          data: values,
-                          borderColor: 'rgb(75, 192, 192)',
-                          tension: 0.1
-                      }]
-                  },
-                  options: {
-                      scales: {
-                          y: {
-                              beginAtZero: true
-                          }
-                      }
-                  }
-              });
-          })
-          .catch(error => console.error('Ошибка:', error));
-       });
-   });
-  </script>
+                salesChart = new Chart(chartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Продажи',
+                            data: values,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+
+        // Update display text based on input
+        function updateText(inputId, displayId) {
+            document.getElementById(inputId).addEventListener('input', function() {
+                document.getElementById(displayId).textContent = this.value;
+            });
+        }
+
+        updateText('id_date_min', 'date_min_display');
+        updateText('id_count_min', 'count_min_display');
+        updateText('id_percent_min', 'percent_min_display');
+        updateText('id_data_max', 'data_max_display');
+        updateText('id_count_max', 'count_max_display');
+        updateText('id_percent_max', 'percent_max_display');
+        updateText('id_write_off_date', 'write_off_date_display');
+        updateText('id_minimum_quantity_of_goods', 'minimum_quantity_of_goods_display');
+    });
+</script>
+
 {% endblock %}
