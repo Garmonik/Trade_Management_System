@@ -287,7 +287,7 @@ def write_off_from_market_all(request, id):
 
 
 def storage(request):
-    data = Storage.objects.select_related('place', 'product').filter(user=request.user)
+    data = Storage.objects.select_related('place', 'product').filter(user=request.user).order_by("place__name")
     return render(request, 'storage/index.html', {'data': data})
 
 
