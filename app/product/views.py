@@ -728,4 +728,5 @@ class MarketListView(ListAPIView):
     serializer_class = MarketSerializer
 
     def get_queryset(self):
-        return Market.objects.filter(user=self.request.user).distinct()
+        queryset = Market.objects.filter(user=self.request.user).distinct('place__name')
+        return queryset
