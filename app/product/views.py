@@ -723,9 +723,9 @@ class SalesGraphAPIView(APIView):
         return Response({'error': 'Invalid date parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MarketListView(ListAPIView):
+class MarketListView(APIView):
 
-    def get_queryset(self):
+    def get(self, request):
         qs = []
         queryset = Market.objects.filter(user=self.request.user)
         for i in queryset:
