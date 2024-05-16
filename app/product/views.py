@@ -267,8 +267,7 @@ def return_from_market_all(request, id):
         storage = Storage(place=market.place, product=market.product, amount=amount, user=request.user)
         storage.save()
 
-        messages.success(request, 'Товар успешно возвращен на склад')
-        return redirect('rec_write-off')
+        return Response(status=status.HTTP_200_OK)
 
 
 def write_off_from_market_all(request, id):
@@ -278,7 +277,7 @@ def write_off_from_market_all(request, id):
     if request.method == 'POST':
         market.delete()
 
-        return redirect('rec_write-off')
+        return Response(status=status.HTTP_200_OK)
 
 
 def storage(request):
