@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => {
         const marketSelect = document.getElementById('marketSelect');
         data.forEach(market => {
-            let option = new Option(market.place_name, market.id);
+            let option = new Option(place_name);
             marketSelect.add(option);
         });
     })
