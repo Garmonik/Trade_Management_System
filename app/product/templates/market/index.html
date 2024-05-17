@@ -4,7 +4,7 @@
 .btn {
   background-color: #4CAF50; /* Зеленый */
   color: white;
-  padding: 14px 20px;
+  padding: 16px 20px;
   margin: 8px
   border: none;
   cursor: pointer;
@@ -31,8 +31,20 @@
       </ul>
     </div>
   {% endif %}
-<a href="{% url 'add_to_market' %}" class="btn">Добавить позицию на рынок</a>
-<a href="{% url 'market_history' %}" class="btn">История</a>
+    <div class="container" style="margin-bottom:10px">
+    <a href="{% url 'add_to_market' %}">
+<button class="btn btn-primary" style="background-color: #222222; color: white;"
+    onmouseover="this.style.backgroundColor='#337ab7'; this.style.color='#white';"
+    onmouseout="this.style.backgroundColor='#222222'; this.style.color='white';">
+    Добавить позицию в торговую точку</button>
+    </a>
+    <a href="{% url 'market_history' %}">
+<button class="btn btn-primary" style="background-color: #222222; color: white;"
+    onmouseover="this.style.backgroundColor='#337ab7'; this.style.color='#white';"
+    onmouseout="this.style.backgroundColor='#222222'; this.style.color='white';">
+    История</button>
+    </a>
+    </div>
   <table class="table">
     <tr>
         <th>Помещение</th>
@@ -46,9 +58,15 @@
     <td><a href="{% url 'get_product' id=i.product.id %}" class="btn">{{ i.product.name }}</a></td>
     <td>{{ i.price }}</td>
     <td>{{ i.amount }}</td>
-    <td><a href="{% url 'sell_from_market' id=i.id %}" class="btn">Продажа</a></td>
-    <td><a href="{% url 'return_from_market' id=i.id %}" class="btn">Возврат на склад</a></td>
-    <td><a href="{% url 'update_to_market_new' pk=i.id %}" class="btn">Изменение позиции</a></td>
+    <td><a href="{% url 'sell_from_market' id=i.id %}">
+        <button class="btn btn-primary" style="background-color: #1db93e; color: white;"
+    onmouseover="this.style.backgroundColor='#1BA93C'; this.style.color='#white';"
+    onmouseout="this.style.backgroundColor='#1db93e'; this.style.color='white';">
+        Продажа</button></a></td>
+    <td><a href="{% url 'return_from_market' id=i.id %}">
+        <button class="btn btn-danger">Возврат на склад</button></a></td>
+    <td><a href="{% url 'update_to_market_new' pk=i.id %}">
+        <button class="btn btn-primary">Изменение позиции</button></a></td>
 
 </tr>
 {% endfor %}

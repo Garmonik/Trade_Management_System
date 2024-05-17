@@ -12,8 +12,14 @@
       </ul>
     </div>
   {% endif %}
-  <a href="{% url 'add_to_storage' %}" class="btn">Добавить товары на склад</a>
+        <div class="container" style="margin-bottom:10px">
+  <a href="{% url 'add_to_storage' %}">
+     <button class="btn btn-primary" style="background-color: #222222; color: white;"
+    onmouseover="this.style.backgroundColor='#337ab7'; this.style.color='#white';"
+             onmouseout="this.style.backgroundColor='#222222'; this.style.color='white';">Добавить товары на склад</button></a>
+        </div>
   <table class="table">
+
     <tr>
         <th>Помещение</th>
         <th>Товар</th>
@@ -24,7 +30,8 @@
     <td><a href="{% url 'get_place' id=i.place.id %}" class="btn">{{ i.place.name }}</a></td>
     <td><a href="{% url 'get_product' id=i.product.id %}" class="btn">{{ i.product.name }}</a></td>
     <td>{{ i.amount }}</td>
-    <td><a href="{% url 'write_off_from_storage' id=i.id %}" class="btn">Списать</a></td> <!-- Исправлено с storage.id на i.id -->
+    <td><a href="{% url 'write_off_from_storage' id=i.id %}">
+                <button class="btn btn-danger">Списать</button></a></td></a></td> <!-- Исправлено с storage.id на i.id -->
 </tr>
 {% endfor %}
   </table>

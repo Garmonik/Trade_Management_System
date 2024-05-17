@@ -12,7 +12,13 @@
       </ul>
     </div>
   {% endif %}
-  <h4><a href="{% url 'add_product' %}" class="btn">Добавить новый товар</a></h4>
+  <h4>
+    <a href="{% url 'add_product' %}">
+<button class="btn btn-primary" style="background-color: #222222; color: white;"
+    onmouseover="this.style.backgroundColor='#337ab7'; this.style.color='#white';"
+    onmouseout="this.style.backgroundColor='#222222'; this.style.color='white';">
+  Добавить новый товар</button></a>
+  </h4>
   <h3>
     <ul>
       {% for p in products %}
