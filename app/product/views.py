@@ -737,5 +737,5 @@ class MarketListView(APIView):
 
 
 def my_image(request):
-    image_data = open("./static/favicon.ico", "rb").read()
+    image_data = open("./image/favicon.ico", "rb").read()
     return HttpResponse(image_data, content_type="image/png")
