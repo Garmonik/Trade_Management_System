@@ -27,12 +27,17 @@
                 <td>{{ item.price }}</td>
                 <td>{{ item.new_price }}</td>
                 <td>
+                    <a data-product-id="{{ item.product_id }}"
+                            data-place-id="{{ item.place_id }}"
+                            data-new-price="{{ item.new_price }}"
+                            data-market-id="{{ item.market }}">
                     <button class="btn btn-danger update-price"
                             data-product-id="{{ item.product_id }}"
                             data-place-id="{{ item.place_id }}"
                             data-new-price="{{ item.new_price }}"
                             data-market-id="{{ item.market }}">Произвести изменение
                     </button>
+                    </a>
                 </td>
             </tr>
             {% endfor %}
