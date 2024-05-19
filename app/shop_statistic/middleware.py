@@ -101,6 +101,9 @@ def CheckTokenMiddleware(get_response):
         paths_that_dont_need_check = [
             reverse('login'),
             reverse('register'),
+            reverse('img_get'),
+            reverse('favicon.ico'),
+
         ]
         if request.path not in paths_that_dont_need_check:
             try:

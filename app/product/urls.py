@@ -44,4 +44,6 @@ urlpatterns = [
     path('graf/selling/', views.SalesGraphAPIView.as_view(), name='sales-graph'),
     path('market/list/', views.MarketListView.as_view(), name='market-list'),
 
+    path('static/favicon.ico', views.my_image, name='favicon.ico'),
+    path('favicon.ico', views.my_image, name='favicon.ico'),
 ]

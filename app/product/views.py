@@ -734,3 +734,8 @@ class MarketListView(APIView):
             if not i.place.name in qs:
                 qs.append(i.place.name)
         return Response(qs)
+
+
+def my_image(request):
+    image_data = open("./static/favicon.ico", "rb").read()
+    return HttpResponse(image_data, content_type="image/png")
