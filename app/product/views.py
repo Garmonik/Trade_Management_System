@@ -1,4 +1,5 @@
 import json
+import random
 from datetime import timedelta
 
 from django.contrib.auth import authenticate, login
@@ -188,7 +189,17 @@ def update_to_market(request, pk):
             recent_update_exists = MarketUpdate.objects.create(
                 market=market,
                 product=market.product)
-            market.price = price
+            storage = Storage.objects.filter(place=market.place, user=request.user)
+            if not storage:
+                return JsonResponse({"success": False, "message": "not product"})
+            storage = storage.first()
+            if storage.amount >= price:
+                storage.amount -= price
+                amount = price
+            else:
+                amount, storage.amount = storage.amount, 0
+            storage.save()
+            market.amount += amount
             market.save()
             return JsonResponse({"success": True, "message": "Цена успешно обновлена"})
         except Exception as e:
@@ -540,7 +551,7 @@ def recommendations_successes_view(request):
             continue
 
         if total_sold > count_max:
-            new_price = market.price + (market.price * percent_max / 100)
+            new_price = random.randint(total_sold/2, total_sold)
             result = {
                 'product': product.name,
                 'place': market.place.name,
