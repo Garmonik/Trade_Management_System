@@ -551,12 +551,11 @@ def recommendations_successes_view(request):
             continue
 
         if total_sold > count_max:
-            new_price = random.randint(total_sold/2, total_sold)
             result = {
                 'product': product.name,
                 'place': market.place.name,
                 'price': market.price,
-                'new_price': new_price,
+                'new_price': total_sold,
                 'product_id': product.id,
                 'place_id': market.place.id,
                 'market': market.id
